@@ -15,8 +15,22 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<Task> getTasks(String filter) {
+        if ("completed".equals(filter)) {
+            return taskRepository.findByCompleted(true);
+        } else if ("incomplete".equals(filter)) {
+            return taskRepository.findByCompleted(false);
+        } else {
+            return taskRepository.findAll(); // Default to "all"
+        }
+    }
+
+    public long getRemainingCount() {
+        return taskRepository.countByCompleted(false); // Counts incomplete tasks
+    }
+
+    public long getTotalCount() {
+        return taskRepository.count();
     }
 
     public void createTask(String title) {

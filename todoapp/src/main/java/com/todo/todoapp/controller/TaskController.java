@@ -21,12 +21,22 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @GetMapping
-    public String getTasks(Model model){
-        List<Task> tasks = taskService.getAllTasks();
-        //this helps to send the data to tasks.html
+    @GetMapping("/") // Maps to localhost:8080/
+    public String getTasks(@RequestParam(name = "filter", defaultValue = "all") String filter, Model model) {
+
+        // 1. Get the list of tasks based on the filter (All, Completed, or Incomplete)
+        List<Task> tasks = taskService.getTasks(filter);
+
+        // 2. Get the counts for the Motivational Banner
+        long remainingCount = taskService.getRemainingCount();
+        long totalCount = taskService.getTotalCount();
+
+        // 3. Send all this data to Thymeleaf (tasks.html)
         model.addAttribute("tasks", tasks);
-        //name of thymeleaf template
+        model.addAttribute("filter", filter);           // To highlight the active Tab
+        model.addAttribute("remainingCount", remainingCount); // For "X tasks to go"
+        model.addAttribute("totalCount", totalCount);     // For "Done for the day"
+
         return "tasks";
     }
 
